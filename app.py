@@ -123,6 +123,10 @@ if submitted:
     # アドバイス表示
     if advice_list:
         for advice in advice_list:
-            st.warning(advice) if "⚠️" in advice else st.info(advice)
+            # 普通のif文に書き換えることで、余計な表示を消す
+            if "⚠️" in advice:
+                st.warning(advice)
+            else:
+                st.info(advice)
     else:
-        st.write("全体的にバランスが取れています。気になる項目があれば、パートナーと話し合ってみましょう！")
+        st.success("全体的にバランスが取れています。気になる項目があれば、パートナーと話し合ってみましょう！")
