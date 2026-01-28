@@ -5,17 +5,15 @@ import plotly.graph_objects as go
 st.set_page_config(
     page_title="Partnership Health Check",
     page_icon="❤️",
-    layout="wide"  # ワイド表示にして文章を読みやすく
+    layout="wide"
 )
 
-# --- スタイリング (Dark Mode Safe & Readability) ---
+# --- スタイリング ---
 st.markdown("""
 <style>
-    /* 全体のフォント調整 */
     body {
         font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
     }
-    /* レポートボックス */
     .report-card {
         background-color: #ffffff;
         color: #1e1e1e;
@@ -44,7 +42,6 @@ st.markdown("""
         font-size: 1.05em;
         margin-bottom: 15px;
     }
-    /* 強みボックス */
     .asset-card {
         background-color: #f1f8e9;
         color: #2e7d32;
@@ -57,7 +54,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- ヘッダーエリア ---
+# --- ヘッダー ---
 st.title("❤️ Partnership Health Check / Deep Strategy")
 st.markdown("""
 あなたのパートナーシップの状態を**「8つの指標」**から徹底的に分解・言語化します。  
@@ -93,7 +90,7 @@ with st.form("check_form"):
     submitted = st.form_submit_button("深層分析レポートを作成する", type="primary")
 
 
-# --- ロジックコア：グレード判定関数 ---
+# --- ロジック関数 ---
 def get_grade(score):
     if score <= 2: return "Danger"
     if score <= 4: return "Warning"
@@ -101,13 +98,13 @@ def get_grade(score):
     if score <= 8: return "Good"
     return "Master"
 
-# --- 深層診断ロジック ---
 def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
     reports = []
 
-    # グレード変換
+    # ▼ ここが修正ポイント！全変数のグレード変換を確実に実行
     g_q1, g_q2 = get_grade(q1), get_grade(q2)
     g_q3, g_q4 = get_grade(q3), get_grade(q4)
+    g_q5, g_q6 = get_grade(q5), get_grade(q6) # ← これが抜けてた！
     g_q7, g_q8 = get_grade(q7), get_grade(q8)
 
     # ---------------------------------------------------------
@@ -116,7 +113,6 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
     if g_q2 in ["Danger", "Warning"]:
         title = "🛡️ 『境界線』の喪失と自己犠牲"
         if g_q1 in ["Good", "Master"]:
-            # YESは言えるがNOは言えない（良い子ちゃん）
             analysis = """
             あなたは「やりたいこと」は明るく提案できる一方で、「嫌だ」という感情には蓋をしてしまう傾向が強く出ています。
             これは典型的な**「愛着不安による迎合」**のパターンです。「NOと言ったら、場の空気が悪くなる」「嫌われるかもしれない」という無意識の恐れが、あなたの口を塞いでいます。
@@ -127,7 +123,6 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
             あなたが断っても、相手はあなたを嫌いになったりしない。その「安全確認」を積み重ねることが、今のあなたには必要です。
             """
         else:
-            # YESもNOも言えない（完全受け身）
             analysis = """
             自分の意思を表明すること自体に、強いブロックがかかっています。相手に合わせすぎて、自分自身の輪郭がぼやけてしまっている危険な状態です。
             「どうせ聞いてもらえない」という諦めがあるか、あるいは「自分には主張する権利がない」と自己価値を低く見積もっている可能性があります。
@@ -141,7 +136,7 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
     # 分析2: 「受信力」と「安全基地」の相関 (Q3, Q4, Q5)
     # ---------------------------------------------------------
     receptivity_score = q3 + q4 + q5
-    if receptivity_score <= 12: # 平均4以下
+    if receptivity_score <= 12: 
         title = "📡 『受信アンテナ』の感度低下"
         analysis = """
         相手の信号を受け取る力が全体的に弱まっています。特に深刻なのは、相手が発しているであろう「無言のサイン」や「小さなSOS」を見落としている可能性が高いことです。
@@ -159,7 +154,7 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
     # 分析3: Doing(貢献) vs Being(共有) のバランス (Q7, Q8)
     # ---------------------------------------------------------
     diff_action = q7 - q8
-    if diff_action >= 3: # 貢献ばかりして、ただ一緒にいるのが苦手
+    if diff_action >= 3:
         title = "🏃‍♂️ 『ワーカホリック』な愛情表現"
         analysis = """
         あなたは「相手の役に立つこと」でしか、自分の存在価値を感じられなくなっているかもしれません。
@@ -173,7 +168,7 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
         """
         reports.append({"title": title, "analysis": analysis, "action": action})
     
-    elif diff_action <= -3: # 何もしないけど、一緒にいる（ヒモ・依存傾向？）
+    elif diff_action <= -3:
         title = "🛋️ 『依存的共生』の落とし穴"
         analysis = """
         一緒にいることの居心地は良いようですが、相手への能動的な貢献が不足しています。
@@ -221,7 +216,7 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
         """
         reports.append({"title": title, "analysis": analysis, "action": action})
 
-    # レポートがない（平均的）場合のフォールバック
+    # フォールバック
     if len(reports) == 0:
         title = "⚖️ 『凪（なぎ）』の状態・現状維持の罠"
         analysis = """
@@ -242,7 +237,7 @@ def generate_deep_feedback(q1, q2, q3, q4, q5, q6, q7, q8):
 if submitted:
     st.divider()
     
-    # 1. レーダーチャート (前回と同じだが大きく表示)
+    # チャートとスコア
     labels = ['発信:快', '発信:不快', '受信:快', '受信:不快', '空気感', 'スキンシップ', '貢献(Doing)', '共有(Being)']
     values = [q1, q2, q3, q4, q5, q6, q7, q8]
     values_radar = values + [values[0]]
@@ -268,14 +263,13 @@ if submitted:
         total_score = sum(values)
         st.metric("Total Score", f"{total_score} / 80")
         
-        # 簡易フィードバック（強み）
         st.markdown("#### 💎 Relationship Assets")
         if q3 >= 8: st.markdown('<div class="asset-card">👂 卓越した「傾聴力」があります</div>', unsafe_allow_html=True)
         if q5 >= 8: st.markdown('<div class="asset-card">🏠 最高の「安全基地」を作れています</div>', unsafe_allow_html=True)
         if q2 >= 8: st.markdown('<div class="asset-card">🛡️ 健全な「境界線」を持っています</div>', unsafe_allow_html=True)
         if total_score <= 40: st.markdown('<div class="asset-card">🌱 これから「伸びていく」関係です</div>', unsafe_allow_html=True)
 
-    # 2. 深層分析レポート (メインコンテンツ)
+    # 深層レポート
     st.header("📋 Deep Diagnostic Report")
     st.markdown("あなたの回答パターンから導き出された、現在の関係性の深層分析です。")
     
